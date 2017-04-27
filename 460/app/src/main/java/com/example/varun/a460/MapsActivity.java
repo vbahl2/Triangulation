@@ -1,7 +1,9 @@
 package com.example.varun.a460;
 
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
+import android.support.annotation.InterpolatorRes;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -9,6 +11,7 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.net.ConnectivityManager;
 
+import java.util.*;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,15 +36,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
 
-        WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+         //WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
 
         //ConnectivityManager connectivityManager = (ConnectivityManager) ctx.getSystemService(ctx.CONNECTIVITY_SERVICE);
-        connectivityManager = (ConnectivityManager) ctx.getSystemService(ctx.CONNECTIVITY_SERVICE);
+     //   connectivityManager = (ConnectivityManager) ctx.getSystemService(ctx.CONNECTIVITY_SERVICE);
 
         //NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         //wifiManager.startScan().on
        // Network [] network = connectivityManager.getAllNetworks();
         //networkInfo.isConnected();
+    }
+
+    public void createWifiManager(){
+        WifiManager wifiManager = (WifiManager) ctx.getSystemService(ctx.WIFI_SERVICE);
     }
 
     /**Found on stack overflow**/
@@ -56,12 +63,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public int getSignalStrength(WifiManager wifiManager)
+    /**General method**/
+    public int getSignalStrength(WifiManager wifiManager, int numberOfLevels)
     {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int level = 
+       // int level =
+        return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), numberOfLevels);
+
     }
 
+    /***Get current signal strength**/
+
+
+    /**Stack overflow**/
+    public List<Integer> getSignalStrengList(WifiManager wifiManager, int numberOfLevels){
+        List<ScanResult> wifiList = wifiManager.getScanResults();
+        List<Integer> SignalLevels = new ArrayList<Integer>(wifiList.size());
+        Integer level;
+        for(ScanResult result : wifiList) {
+            level = ((Integer) WifiManager.calculateSignalLevel(result.level, numberOfLevels));
+            SignalLevels.add(level);
+        }
+
+        return SignalLevels;
+
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
